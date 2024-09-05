@@ -1,7 +1,9 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -15,15 +17,15 @@ class Category(models.Model):
         verbose_name = "category"
         verbose_name_plural = "categories"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
     
     def get_absolute_url(self):
         return reverse('shop:product_list_by_category', args=[self.slug])
     
 
-
 class PublishManager(models.Manager):
+    # Custom manager to filter published posts
     def get_queryset(self) -> models.QuerySet:
         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
@@ -33,10 +35,10 @@ class Post(models.Model):
         DRAFT = "DF", "Draft"
         PUBLISHED = "PB", "Published"
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="author")
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
-    thumbnail = models.ImageField()
+    thumbnail = models.ImageField(blank=True, null=True )
     description = models.TextField()
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
     publish = models.DateTimeField(default=timezone.now)
