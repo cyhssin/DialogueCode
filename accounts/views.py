@@ -1,29 +1,37 @@
-import random
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 from django.shortcuts import render, redirect
 from django.views import View
-from django.contrib import messages
 
-
-from .forms import UserRegisterForm
 from .models import User
+from api.serializers import UserRegisterSerializer, UserLoginSerializer
 
 
-class UserRegisterView(View):
-    form_class = UserRegisterForm
-    template_name = "accounts/register_page.html"
-
-    def get(self, request):
-        form = self.form_class
-        return render(request, self.template_name, {"form": form})
+class UserRegisterView(APIView):
+    serializer_class = UserRegisterSerializer
 
     def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            request.session["user_registration_info"] = {
-                "phone_number": form.cleaned_data["phone"],
-                "email": form.cleaned_data["email"],
-                "full_name": form.cleaned_data["full_name"],
-                "password": form.cleaned_data["password"],
-            }
-            return redirect("accounts:verify_code")
-        return render(request, self.template_name, {"form":form})
+        ser_data = self.serializer_class(data=request.POST)
+        if ser_data.is_valid():
+            User.objects.create(**ser_data.validated_data)
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UserLoginView(generics.GenericAPIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        
+        # Create JWT tokens
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })

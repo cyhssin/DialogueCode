@@ -17,10 +17,10 @@ class UserAdmin(BaseUserAdmin):
     )
 
     add_fieldsets = (
-        (None, {"fields":("email", "phone_number", "sur_name", "fore_name", "password", "confirm_password")}),
+        (None, {"fields":("email", "phone_number", "surname", "forename", "password", "confirm_password")}),
     )
-    search_fields = ("email", "sur_name", "fore_name")
-    ordering = ("sur_name",)
+    search_fields = ("email", "surname", "forename")
+    ordering = ("surname",)
     filter_horizontal = ()
 
 admin.site.unregister(Group)

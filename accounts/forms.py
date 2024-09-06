@@ -10,7 +10,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields  = ("phone_number", "email", "sur_name", "fore_name")
+        fields  = ("phone_number", "email", "surname", "forename")
 
     def clean_confirm_password(self):
         cd = self.cleaned_data
@@ -32,7 +32,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("phone_number", "email", "sur_name", "fore_name", "password", "last_login")
+        fields = ("phone_number", "email", "surname", "forename", "password", "last_login")
 
 
 class UserRegisterForm(forms.Form):
