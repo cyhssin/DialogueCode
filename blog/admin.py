@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Category, Tag
+from .models import Article, Category, Tag, FavoriteArticle, Comment
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
@@ -22,3 +22,13 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ["title", "owner", "created"]
     list_filter = ["owner", "created"]
     prepopulated_fields = {"slug":("title",)}
+
+@admin.register(FavoriteArticle)
+class FavoriteArticleAdmin(admin.ModelAdmin):
+    list_display = ["user", "article", "created"]
+    list_filter = ["user", "article"]
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ["user", "article", "created"]
+    list_filter = ["user", "article"]

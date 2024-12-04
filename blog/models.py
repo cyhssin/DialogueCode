@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 
@@ -39,14 +39,14 @@ class Article(models.Model):
 
     def __str__(self) -> str:
         return self.title
-    
+
     def get_absolute_url(self):
         return reverse("blog:article_detail",
                        args=[
                            self.publish.year,
                            self.publish.month,
                            self.publish.day,
-                           self.slug
+                           self.slug,
                        ])
 
 class Category(models.Model):
@@ -76,3 +76,31 @@ class Tag(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+class FavoriteArticle(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_article")
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="favorite_by")
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "article")   # Ensure a user can favorite an article only
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.article.title}"
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment_by")
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["created"]
+        indexes = [
+            models.Index(fields=["created"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"Comment by {self.user} on {self.article}"
