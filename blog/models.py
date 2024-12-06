@@ -40,6 +40,15 @@ class Article(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def likes_count(self):
+        return self.pvotes.count()
+
+    def user_can_like(self, user):
+        user_like = user.uvotes.filter(article=self)
+        if user_like.exists():
+            return True
+        return False
+
     def get_absolute_url(self):
         return reverse("blog:article_detail",
                        args=[
@@ -91,7 +100,7 @@ class FavoriteArticle(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_by")
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comments")
-    reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='rcomments', blank=True, null=True)
+    reply = models.ForeignKey("self", on_delete=models.CASCADE, related_name="rcomments", blank=True, null=True)
     is_reply = models.BooleanField(default=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -106,3 +115,10 @@ class Comment(models.Model):
 
     def __str__(self) -> str:
         return f"Comment by {self.user} on {self.article}"
+
+class Vote(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="uvotes")
+	article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="pvotes")
+
+	def __str__(self):
+		return f"{self.user} liked {self.article.slug}"

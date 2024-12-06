@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Category, Tag, FavoriteArticle, Comment
+from .models import Article, Category, Tag, FavoriteArticle, Comment, Vote
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
@@ -32,3 +32,5 @@ class FavoriteArticleAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ["user", "article", "created"]
     list_filter = ["user", "article"]
+
+admin.site.register(Vote)

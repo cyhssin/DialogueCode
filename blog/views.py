@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from .models import Article, Tag, Comment
+from .models import Article, Tag, Comment, Vote
 from .forms import CommentForm, CommentReplyForm
 
 class ArticleView(View):
@@ -28,12 +28,16 @@ class DetailView(View):
 
     def get(self, request, year, month, day, slug):
         comments = self.article_instance.comments.filter(active=True)
+        can_like = False
+        if request.user.is_authenticated and self.article_instance.user_can_like(request.user):
+            can_like = True
         return render(request,
                     "blog/detail.html",
                     {"article": self.article_instance,
                      "comments":comments,
                      "form":self.form_class,
-                     "reply_form": self.form_class_reply})
+                     "reply_form": self.form_class_reply,
+                     "can_like": can_like,})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -70,3 +74,14 @@ class ArticleAddReplyView(LoginRequiredMixin, View):
 			reply.save()
 			messages.success(request, "your reply submitted successfully", "success")
 		return redirect(article.get_absolute_url())
+
+class ArticleLikeView(LoginRequiredMixin, View):
+    def get(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        like = Vote.objects.filter(user=request.user, article=article)
+        if like.exists():
+            messages.error(request, "You have already liked this post", "error")
+        else:
+            Vote.objects.create(user=request.user, article=article)
+            messages.success(request, "You liked this post", "success")
+        return redirect(article.get_absolute_url())
