@@ -259,7 +259,7 @@ poetry.toml
 
 # ruff
 .ruff_cache/
-ruff.tom
+ruff.toml
 
 
 # LSP config files

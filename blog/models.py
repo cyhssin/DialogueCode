@@ -89,8 +89,10 @@ class FavoriteArticle(models.Model):
         return f"{self.user.username} - {self.article.title}"
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment_by")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_by")
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comments")
+    reply = models.ForeignKey('self', on_delete=models.CASCADE, related_name='rcomments', blank=True, null=True)
+    is_reply = models.BooleanField(default=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)

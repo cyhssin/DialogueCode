@@ -1,3 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<h3>Welcome to my blog</h3>
+
+{% if tag %}
+    <h2>Posts tagged with "{{ tag.name }}"</h2>
+{% endif %}
+
 {% for art in articles %}
-    <p>art.title</p>
+<h3><a href="{{ art.get_absolute_url }}">
+    {{ art.title }}
+</a></h3>
+
+<p class="date">
+    Published {{ art.publish }} by {{ art.author }}
+</p>
+{{ art.body|truncatewords:30|linebreaks }}
+<hr>
 {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <p> {{ article.title}} </p>
+    <small> {{ article.publish }} </small>
+    <p> {{ article.description}} </p>
+
+    <hr>
+
+    {% if request.user.is_authenticated %}
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Send">
+        </form> <br/>
+    {% else %}
+        <p class="alert alert-danger">Only logged in users can comment.</p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="card bg-dark text-white">
+            <p class="card-header">{{ comment.user }} | {{ comment.created|timesince }}</p>
+            <p class="card-body">{{ comment.description }}</p>
+
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'blog:add_reply' article.id comment.id %}" method="post">
+                    {% csrf_token %}
+                    {{ reply_form.as_p }}
+                    <input type="submit" value="send">
+                </form>
+            {% endif %}
+
+            {% if comment.rcomments.all %}
+                {% with replies=comment.rcomments.all %}
+                {% for reply in replies %}
+                <p class="bg-primary p-3 m-2">{{ reply.user }} <br/> {{ reply.body }}</p>
+                {% endfor %}
+                {% endwith %}
+            {% else %}
+                <p>No replies yet!</p>
+            {% endif %}
+
+        </div><br/>
+    {% empty %}
+        <p>No comments yet!</p>
+    {% endfor %}
+
+{% endblock %}
