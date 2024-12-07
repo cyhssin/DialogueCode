@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 
-User = settings.AUTH_USER_MODEL
+from accounts.models import User
 
 class PublishManager(models.Manager):
     def get_queryset(self) -> models.QuerySet:
