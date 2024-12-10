@@ -13,7 +13,7 @@ class Article(models.Model):
         DRAFT = "DF", "Draft"
         PUBLISHED = "PB", "Published"
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="articles")
     title = models.CharField(max_length=255)
     description = models.TextField()
     thumbnail = models.ImageField(upload_to="media/products/%Y/%m/%d", blank=True)

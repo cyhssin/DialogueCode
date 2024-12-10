@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.utils import timezone
 
 from .managers import UserManager
 
@@ -22,4 +23,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    birth = models.DateTimeField(null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
+
+    def get_age(self):
+        today = timezone.now()
+        age = today.year - self.birth.year
+        if (today.month, today.day) < (self.birth.month, self.birth.day):
+            age -= 1
+        return age
+
     

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserCreationForm, UserChangeForm
-from .models import User
+from .models import User, Profile
 
 class UserAdmin(BaseUserAdmin):
 	form = UserChangeForm
@@ -32,4 +32,14 @@ class UserAdmin(BaseUserAdmin):
 			form.base_fields["is_superuser"].disabled = True
 		return form
 
-admin.site.register(User, UserAdmin)
+class ProfileInline(admin.StackedInline):
+	model = Profile
+	can_delete = False
+
+class ExtendedUserAdmin(UserAdmin):
+	inlines = (ProfileInline,)
+
+# Unregister the default User admin
+
+# Register the custom User admin
+admin.site.register(User, ExtendedUserAdmin)
