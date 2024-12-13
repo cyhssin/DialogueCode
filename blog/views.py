@@ -120,3 +120,17 @@ class ArticleEditView(LoginRequiredMixin, View):
             update_article.save()
             messages.success(request, "you updated this post", "success")
             return redirect(article.get_absolute_url())
+
+class ArticleDeleteView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, status=Article.Status.PUBLISHED,
+                            publish__year=kwargs["year"],
+                            publish__month=kwargs["month"],
+                            publish__day=kwargs["day"],
+                            slug=kwargs["slug"],)
+        if article.author.id == request.user.id:
+            article.delete()
+            messages.success(request, "post deleted successfully", "success")
+        else:
+            messages.error(request, "you cant delete this post", "danger")
+        return redirect("accounts:user_profile")
