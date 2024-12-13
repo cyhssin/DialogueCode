@@ -2,9 +2,10 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.utils.text import slugify
 
 from .models import Article, Tag, Comment, Vote
-from .forms import CommentForm, CommentReplyForm
+from .forms import CommentForm, CommentReplyForm, ArticlesEditForm
 
 class ArticleView(View):
     def get(self, request, tag_slug=None):
@@ -85,3 +86,37 @@ class ArticleLikeView(LoginRequiredMixin, View):
             Vote.objects.create(user=request.user, article=article)
             messages.success(request, "You liked this post", "success")
         return redirect(article.get_absolute_url())
+
+class ArticleEditView(LoginRequiredMixin, View):
+    form_class = ArticlesEditForm
+    template_name = "blog/edit.html"
+
+    def setup(self, request, *args, **kwargs):
+        self.article_instance = get_object_or_404(Article, status=Article.Status.PUBLISHED,
+                            publish__year=kwargs["year"],
+                            publish__month=kwargs["month"],
+                            publish__day=kwargs["day"],
+                            slug=kwargs["slug"],)
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        article = self.article_instance
+        if not article.author.id == request.user.id:
+            messages.error(request, "you cant update this post", "danger")
+            return redirect("blog:home")
+        return super().dispatch(request, *args, **kwargs)
+        
+    def get(self, request, *args, **kwargs):
+        article = self.article_instance
+        form = self.form_class(instance=article)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        article = self.article_instance
+        form = self.form_class(request.POST, instance=article)
+        if form.is_valid():
+            update_article = form.save(commit=False)
+            update_article.slug = slugify(form.cleaned_data["title"])
+            update_article.save()
+            messages.success(request, "you updated this post", "success")
+            return redirect(article.get_absolute_url())

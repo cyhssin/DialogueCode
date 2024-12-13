@@ -1,28 +1,31 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-
+    
+    <!-- Detail -->
     <p>{{ article.title }}</p>
     <small>{{ article.publish }}</small>
     <p>{{ article.description }}</p>
 
     <hr>
 
+    <!-- Like -->
     {% if request.user.is_authenticated %}
         <a href="{% url 'blog:article_like' article.id %}" class="{% if can_like %}disabled{% endif %}">
             Like {{ article.likes_count }}
         </a>
-
+        <!-- Comment Form -->
         <form action="" method="post">
             {% csrf_token %}
-            {{ form.as_p }}  <!-- Ensure form is instantiated in the view -->
+            {{ form.as_p }}
             <input type="submit" value="Send">
         </form>
         <br/>
     {% else %}
         <p class="alert alert-danger">Only logged in users can comment.</p>
     {% endif %}
-
+    
+    <!-- Instead Comment reply -->
     {% for comment in comments %}
         <div class="card bg-dark text-white">
             <p class="card-header">{{ comment.user }} | {{ comment.created|timesince }}</p>
@@ -31,15 +34,15 @@
             {% if request.user.is_authenticated %}
                 <form action="{% url 'blog:add_reply' article.id comment.id %}" method="post">
                     {% csrf_token %}
-                    {{ reply_form.as_p }}  <!-- Ensure reply form is instantiated in the view -->
-                    <input type="submit" value="send">
+                    {{ reply_form.as_p }}
+                    <input type="submit" value="Send">
                 </form>
             {% endif %}
 
             {% if comment.rcomments.all %}
                 {% with replies=comment.rcomments.all %}
                     {% for reply in replies %}
-                        <p class="bg-primary p-3 m-2">{{ reply.user }} <br/> {{ reply.body }}</p>
+                        <p class="bg-primary p-3 m-2">{{ reply.user }} <br/> {{ reply.description }}</p>
                     {% endfor %}
                 {% endwith %}
             {% else %}
@@ -51,4 +54,7 @@
         <p>No comments yet!</p>
     {% endfor %}
 
+    <!-- Delete and Edit Bottom -->
+    <a href=""></a>
+    <a href=""></a>
 {% endblock %}

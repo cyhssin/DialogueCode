@@ -9,4 +9,5 @@ urlpatterns = [
     path("<int:year>/<int:month>/<int:day>/<slug:slug>/", views.DetailView.as_view(), name="article_detail"),
     path("reply/<int:article_id>/<int:comment_id>/", views.ArticleAddReplyView.as_view(), name="add_reply"),
 	path("like/<int:article_id>/", views.ArticleLikeView.as_view(), name="article_like"),
+	path("edit/<int:year>/<int:month>/<int:day>/<slug:slug>/", views.ArticleEditView.as_view(), name="article_edit"),
 ]

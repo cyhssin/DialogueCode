@@ -9,4 +9,10 @@
     {{ form.as_p }}
     <input type="submit" value="Change">
 </form>
+
+<div>
+    {% for art in articles %}
+        <a href="{{ art.get_absolute_url }}"> {{ art.title }} </a>
+    {% endfor %}
+</div>
 {% endblock content %}

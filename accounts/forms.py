@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from .models import User, Profile
+from blog.models import Article
 
 class UserCreationForm(forms.ModelForm):
 	password1 = forms.CharField(label="password", widget=forms.PasswordInput)
