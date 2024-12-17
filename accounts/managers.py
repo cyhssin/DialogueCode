@@ -9,10 +9,10 @@ class UserManager(BaseUserManager):
 			raise ValueError("user must have email")
 
 		if not sur_name:
-			raise ValueError("user must have full name")
+			raise ValueError("user must have sur_name")
 
 		if not for_name:
-			raise ValueError("user must have full name")
+			raise ValueError("user must have for name")
 
 		user = self.model(phone_number=phone_number, email=self.normalize_email(email),
                                                      sur_name=sur_name, for_name=for_name)

@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
 
-from .forms import UserRegistrationForm, UserProfileForm
+from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from .models import User, Profile
 
 class UserRegistrationView(View):
@@ -51,3 +52,29 @@ class ProfileUserView(LoginRequiredMixin, View):
             request.user.save()
             messages.success(request, "profile edited successfully", "success")
         return redirect("accounts:user_profile", request.user.id)
+
+class UserLoginView(View):
+    form_class = UserLoginForm
+    template_name = "accounts/user_login.html"
+
+    def get(self, request):
+        form = self.form_class
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(request, email=cd["phone"], password=cd["password"])
+            if user is not None:
+                login(request, user)
+                messages.success(request, "You logged in successfully", "info")
+            return redirect("blog:home")
+        messages.error(request, "Email or password is wrong", "warning")
+        return render(request, self.template_name, {"form":form})
+
+class UserLogoutView(LoginRequiredMixin, View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, "You logged out successfully", "success")
+        return redirect("blog:home")
