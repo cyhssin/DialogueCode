@@ -81,7 +81,9 @@ class ArticleLikeView(LoginRequiredMixin, View):
         article = get_object_or_404(Article, id=article_id)
         like = Vote.objects.filter(user=request.user, article=article)
         if like.exists():
-            messages.error(request, "You have already liked this post", "error")
+            last_like = Vote.objects.get(user=request.user, article=article)
+            last_like.delete()
+            messages.error(request, "You disliked this post", "error")
         else:
             Vote.objects.create(user=request.user, article=article)
             messages.success(request, "You liked this post", "success")
@@ -133,4 +135,4 @@ class ArticleDeleteView(LoginRequiredMixin, View):
             messages.success(request, "post deleted successfully", "success")
         else:
             messages.error(request, "you cant delete this post", "danger")
-        return redirect("accounts:user_profile")
+        return redirect("accounts:user_profile", article.author.id)
