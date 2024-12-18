@@ -43,7 +43,7 @@ class UserRegisterVerifyCodeView(View):
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        user_session = request.session["user_registration_i nfo"]
+        user_session = request.session["user_registration_info"]
         code_instance = OtpCode.objects.get(phone_number=user_session["phone"])
         form = self.form_class(request.POST)
         if form.is_valid():

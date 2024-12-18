@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.utils.text import slugify
 
-from .models import Article, Tag, Comment, Vote
+from .models import Article, Tag, Comment, Vote, FavoriteArticle
 from .forms import CommentForm, CommentReplyForm, ArticlesEditForm
 
 class ArticleView(View):
@@ -81,12 +81,23 @@ class ArticleLikeView(LoginRequiredMixin, View):
         article = get_object_or_404(Article, id=article_id)
         like = Vote.objects.filter(user=request.user, article=article)
         if like.exists():
-            last_like = Vote.objects.get(user=request.user, article=article)
-            last_like.delete()
+            like.delete()
             messages.error(request, "You disliked this post", "error")
         else:
             Vote.objects.create(user=request.user, article=article)
             messages.success(request, "You liked this post", "success")
+        return redirect(article.get_absolute_url())
+
+class ArticleFavoriteView(LoginRequiredMixin, View):
+    def get(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        favorite = FavoriteArticle.objects.filter(user=request.user, article=article)
+        if favorite.exists():
+            favorite.delete()
+            messages.success(request, "The article has been removed from your favorites list", "success")
+        else:
+            FavoriteArticle.objects.create(user=request.user, article=article)
+            messages.success(request, "The article has been removed from your favorites list", "success")
         return redirect(article.get_absolute_url())
 
 class ArticleEditView(LoginRequiredMixin, View):

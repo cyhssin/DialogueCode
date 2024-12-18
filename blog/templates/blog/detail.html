@@ -14,11 +14,14 @@
 
     <hr>
 
-    <!-- Like -->
     {% if request.user.is_authenticated %}
-        <a href="{% url 'blog:article_like' article.id %}" class="{% if can_like %}disabled{% endif %}">
+        <!-- Like -->
+        <a href="{% url 'blog:article_like' article.id %}">
             Like {{ article.likes_count }}
         </a>
+        <br>
+        <!-- Favorite Article -->
+         <a href="{% url 'blog:article_favorite' article.id %}"> Favorite </a>
         <!-- Comment Form -->
         <form action="" method="post">
             {% csrf_token %}
