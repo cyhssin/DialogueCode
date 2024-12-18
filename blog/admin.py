@@ -3,7 +3,8 @@ from .models import Article, Category, Tag, FavoriteArticle, Comment, Vote
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ["title", "author", "publish", "status"]
+    list_select_related = ["author", "category"]
+    list_display = ["title", "publish", "status"]
     list_filter = ["status", "created", "publish", "author"]
     search_fields = ["title", "body"]
     prepopulated_fields = {"slug":("title",)}
@@ -13,24 +14,28 @@ class ArticleAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["title", "owner", "created"]
+    list_select_related = ["owner"]
+    list_display = ["title", "created"]
     list_filter = ["owner", "created"]
     prepopulated_fields = {"slug":("title",)}
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ["title", "owner", "created"]
+    list_select_related = ["owner"]
+    list_display = ["title", "created"]
     list_filter = ["owner", "created"]
     prepopulated_fields = {"slug":("title",)}
 
 @admin.register(FavoriteArticle)
 class FavoriteArticleAdmin(admin.ModelAdmin):
-    list_display = ["user", "article", "created"]
+    list_select_related = ["user", "article"]
+    list_display = ["created"]
     list_filter = ["user", "article"]
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ["user", "article", "created"]
+    list_select_related = ["user", "article"]
+    list_display = ["created"]
     list_filter = ["user", "article"]
 
 admin.site.register(Vote)

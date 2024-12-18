@@ -93,7 +93,9 @@ class FavoriteArticle(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("user", "article")   # Ensure a user can favorite an article only
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'article'], name='unique_favorite_article')
+        ]
 
     def __str__(self) -> str:
         return f"{self.user.username} - {self.article.title}"
