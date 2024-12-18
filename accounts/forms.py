@@ -65,3 +65,6 @@ class UserProfileForm(forms.ModelForm):
 class UserLoginForm(forms.Form):
 	phone = forms.CharField()
 	password = forms.CharField(widget=forms.PasswordInput)
+
+class VerifyCodeForm(forms.Form):
+	code = forms.IntegerField()
